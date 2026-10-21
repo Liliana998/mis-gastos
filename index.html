@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1F4D45">
+<title>Mis Gastos</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<main>
+
+<!-- ============ ACCESO (igual que Archivo de Comprobantes) ============ -->
+<section id="vistaInicio" class="acceso">
+  <div class="sello">$</div>
+  <h1>Mis Gastos</h1>
+  <p id="inicioMensaje">Abriendo...</p>
+</section>
+
+<section id="vistaGoogle" class="acceso oculto">
+  <div class="sello">$</div>
+  <h1>Mis Gastos</h1>
+  <p>Inicie sesión con su cuenta de Google. Solo se pide la primera vez en cada dispositivo.</p>
+  <div id="botonGoogle"></div>
+  <div id="googleMensaje" class="aviso oculto"></div>
+</section>
+
+<section id="vistaPin" class="acceso oculto">
+  <div class="sello">$</div>
+  <h1 id="pinTitulo">Ingrese su PIN</h1>
+  <p id="pinTexto">Clave de acceso de 7 dígitos.</p>
+  <div id="puntos" class="puntos"></div>
+  <div id="pinMensaje" role="alert"></div>
+  <div id="teclado" class="teclado"></div>
+  <button id="btnOtraCuenta" class="enlace" type="button">Entrar con otra cuenta de Google</button>
+</section>
+
+<!-- ============ INICIO ============ -->
+<section id="vistaPrincipal" class="oculto">
+  <header class="cab">
+    <div class="sello chico">$</div>
+    <div class="txt"><div class="titulo">Mis Gastos</div></div>
+    <button class="redondo" data-accion="bloquear" type="button" aria-label="Bloquear">
+      <svg viewBox="0 0 24 24" width="20" height="20"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+    </button>
+  </header>
+  <div id="avisoGuardado" class="confirmacion oculto" role="status"></div>
+  <div class="tres">
+    <button class="grande" data-accion="fotografiar" type="button">
+      <svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Fotografiar</span><small>Ticket o comprobante</small>
+    </button>
+    <button class="grande" data-accion="dictar" type="button">
+      <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Dictar</span><small>«Gasté 100 pesos en…»</small>
+    </button>
+    <button class="grande" data-accion="escribir" type="button">
+      <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M13.5 6.5l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Escribir</span><small>Una frase sencilla</small>
+    </button>
+  </div>
+  <button class="historialBtn" data-accion="historial" type="button">
+    <span>Historial de gastos</span>
+    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+  <button class="enlace centrado" data-accion="galeria" type="button">Elegir una foto de la galería</button>
+  <input id="camara" type="file" accept="image/*" capture="environment" hidden>
+  <input id="galeria" type="file" accept="image/*" hidden>
+</section>
+
+<!-- ============ ESCRIBIR / DICTAR ============ -->
+<section id="vistaEscribir" class="oculto">
+  <div class="barra">
+    <button class="redondo" data-accion="inicio" type="button" aria-label="Volver"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <span id="escribirTitulo">Escribir un gasto</span>
+  </div>
+  <div class="tarjeta">
+    <div id="escuchando" class="escuchando oculto"><span class="onda"></span><b>Escuchando…</b> Diga su gasto en una frase.</div>
+    <textarea id="frase" rows="3" placeholder="Ejemplo: Gasté 450 pesos en Gomar con tarjeta"></textarea>
+    <p id="escribirAyuda" class="ayuda">Incluya el importe y el lugar. La fecha y el medio de pago son opcionales: «hoy», «ayer», «el 17 de octubre», «en efectivo», «con tarjeta».</p>
+    <button class="primario ancho" data-accion="interpretar" type="button">Continuar</button>
+    <button class="enlace centrado" data-accion="manual" type="button">Registrar sin frase</button>
+  </div>
+</section>
+
+<!-- ============ LEYENDO TICKET ============ -->
+<section id="vistaLeyendo" class="acceso oculto">
+  <div class="girador"></div>
+  <h1>Leyendo el ticket</h1>
+  <p>Unos segundos...</p>
+</section>
+
+<!-- ============ REVISION ============ -->
+<section id="vistaRevision" class="oculto">
+  <div class="barra">
+    <button class="redondo" data-accion="cancelarRevision" type="button" aria-label="Cancelar"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <span id="revisionTitulo">Revise y guarde</span>
+  </div>
+  <div id="revisionAviso" class="alerta oculto"></div>
+  <form id="formGasto" class="tarjeta formulario" autocomplete="off">
+    <label>Importe
+      <div class="importeCampo"><span>$</span><input id="gImporte" inputmode="decimal" placeholder="0.00"></div>
+    </label>
+    <label>Establecimiento o concepto
+      <input id="gEstab" list="listaEstab" placeholder="Walmart, farmacia, estacionamiento…">
+    </label>
+    <datalist id="listaEstab"></datalist>
+    <label>Fecha
+      <input id="gFecha" type="date">
+    </label>
+    <label>Categoría
+      <select id="gCategoria"></select>
+    </label>
+    <input id="gCategoriaNueva" class="oculto" placeholder="Nombre de la nueva categoría" maxlength="60">
+    <label id="recordarFila" class="casilla oculto"><input id="gRecordar" type="checkbox"> <span id="recordarTexto"></span></label>
+    <div class="etiqueta">Medio de pago <i>(opcional)</i></div>
+    <div id="medios" class="medios">
+      <button type="button" data-medio="efectivo">Efectivo</button>
+      <button type="button" data-medio="tarjeta">Tarjeta</button>
+      <button type="button" data-medio="transferencia">Transferencia</button>
+    </div>
+    <div id="revisionFoto" class="miniatura oculto"><img alt="Fotografía del ticket"></div>
+    <div id="duplicado" class="alerta oculto"></div>
+    <div id="revisionError" class="error" role="alert"></div>
+    <button id="btnGuardar" class="primario ancho" type="submit">Guardar</button>
+  </form>
+</section>
+
+<!-- ============ HISTORIAL ============ -->
+<section id="vistaHistorial" class="oculto">
+  <div class="barra">
+    <button class="redondo" data-accion="inicio" type="button" aria-label="Volver"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <span class="barraTitulo">Historial</span>
+    <button class="enlace" data-accion="categorias" type="button">Categorías</button>
+  </div>
+  <div class="buscador"><input id="hBuscar" type="search" placeholder="Buscar establecimiento o concepto"></div>
+  <div id="periodos" class="chipsFiltro">
+    <button data-periodo="hoy" type="button">Hoy</button>
+    <button data-periodo="mes" type="button">Este mes</button>
+    <button data-periodo="mesAnterior" type="button">Mes anterior</button>
+    <button data-periodo="anio" type="button">Este año</button>
+    <button data-periodo="todo" type="button">Todo</button>
+    <button data-periodo="fechas" type="button">Fechas…</button>
+  </div>
+  <div id="rango" class="rango oculto">
+    <label>Desde <input id="hDesde" type="date"></label>
+    <label>Hasta <input id="hHasta" type="date"></label>
+  </div>
+  <div class="filtroCat"><select id="hCategoria"></select></div>
+  <div id="resumen" class="resumen"></div>
+  <div id="lista"></div>
+</section>
+
+<!-- ============ DETALLE ============ -->
+<section id="vistaDetalle" class="oculto">
+  <div class="barra">
+    <button class="redondo" data-accion="historial" type="button" aria-label="Volver"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <span>Gasto</span>
+  </div>
+  <div id="detalle"></div>
+</section>
+
+<!-- ============ CATEGORIAS ============ -->
+<section id="vistaCategorias" class="oculto">
+  <div class="barra">
+    <button class="redondo" data-accion="historial" type="button" aria-label="Volver"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <span>Categorías</span>
+  </div>
+  <p class="ayuda margen">Las categorías se crean al registrar gastos. Aquí puede cambiarles el nombre o quitar las que no use.</p>
+  <div id="listaCategorias"></div>
+</section>
+
+<div id="cargando" class="cargando oculto"><div class="girador"></div></div>
+</main>
+<script src="config.js"></script>
+<script src="interprete.js"></script>
+<script src="app.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</body>
+</html>
