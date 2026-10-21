@@ -1,7 +1,7 @@
 // Mis Gastos - service worker minimo (trasladado de Archivo de Comprobantes).
 // Solo permite instalar la aplicacion. No guarda gastos, fotos,
 // busquedas ni respuestas del servicio: todo se pide siempre a internet.
-const VERSION_MG = 'mg-v1';
+const VERSION_MG = 'mg-v2';
 
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
