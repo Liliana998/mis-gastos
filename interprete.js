@@ -432,9 +432,15 @@
       if (mejor) return { nombre: mejor.nombre, seguro: true };
     }
     // 2) Cadenas conocidas (la mas especifica primero).
-    var cand = CADENAS.filter(function (c) { return c[1].test(textoTodo); });
+    // La cadena cuyo nombre aparece primero en el ticket (encabezado) gana;
+    // asi una marca de producto ("Aurrera") no sustituye a la tienda. En empate,
+    // la mas especifica ("Mega Soriana" frente a "Soriana").
+    var cand = CADENAS.map(function (c) {
+      var m = textoTodo.match(c[1]);
+      return m ? [c[0], m.index] : null;
+    }).filter(Boolean);
     if (cand.length) {
-      cand.sort(function (a, b) { return b[0].length - a[0].length; });
+      cand.sort(function (a, b) { return a[1] - b[1] || b[0].length - a[0].length; });
       return { nombre: cand[0][0], seguro: true };
     }
     if (/litroscompletos|\b(magna|premium|premiun|diesel|gasolina)\b[\s\S]{0,80}\b(ltr?s?|litros)\b/.test(textoTodo)) {
