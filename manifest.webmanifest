@@ -8,8 +8,8 @@
   "scope": "/mis-gastos/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#F3F5F1",
-  "theme_color": "#1F4D45",
+  "background_color": "#FBF7F5",
+  "theme_color": "#619196",
   "icons": [
     {
       "src": "/mis-gastos/icono-192.png",
